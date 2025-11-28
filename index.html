@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Executors Archive</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="particlesCanvas"></canvas>
+    <div class="background-glow"></div>
+
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <h1 data-i18n="title">Executors Archive</h1>
+                <span class="badge">By CreatorNovaAxis</span>
+            </div>
+            <div class="controls">
+                <div class="search-bar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="searchInput" data-i18n-placeholder="searchPlaceholder"
+                        placeholder="Search executors...">
+                </div>
+                <button class="lang-switcher" id="langSwitcher">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="2" y1="12" x2="22" y2="12"></line>
+                        <path
+                            d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+                        </path>
+                    </svg>
+                    <span id="currentLang">EN</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="filters-section">
+            <div class="filter-group">
+                <label data-i18n="sortBy">Sort By</label>
+                <select id="sortSelect">
+                    <option value="name-asc" data-i18n="sortNameAsc">Name (A-Z)</option>
+                    <option value="name-desc" data-i18n="sortNameDesc">Name (Z-A)</option>
+                    <option value="unc-desc" data-i18n="sortUncDesc">UNC (High-Low)</option>
+                    <option value="unc-asc" data-i18n="sortUncAsc">UNC (Low-High)</option>
+                    <option value="sunc-desc" data-i18n="sortSuncDesc">sUNC (High-Low)</option>
+                    <option value="sunc-asc" data-i18n="sortSuncAsc">sUNC (Low-High)</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label data-i18n="device">Device</label>
+                <div class="device-toggles" id="deviceFilters">
+                    <button class="device-btn active" data-device="all" data-i18n="all">All</button>
+                    <button class="device-btn" data-device="Windows">Windows</button>
+                    <button class="device-btn" data-device="Android">Android</button>
+                    <button class="device-btn" data-device="iOS">iOS</button>
+                    <button class="device-btn" data-device="MacOS">MacOS</button>
+                </div>
+            </div>
+        </section>
+
+        <div class="executors-grid" id="executorsGrid">
+            <!-- Cards will be injected here by JS -->
+        </div>
+    </main>
+
+    <!-- Modal for Info -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2 id="modalTitle">Executor Name</h2>
+            <div class="modal-body">
+                <p id="modalDesc">Description goes here.</p>
+                <div class="modal-stats">
+                    <div class="stat-box">
+                        <span class="stat-label">UNC</span>
+                        <span class="stat-value" id="modalUnc">0%</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">sUNC</span>
+                        <span class="stat-value" id="modalSunc">0%</span>
+                    </div>
+                </div>
+                <div class="modal-features">
+                    <h3 data-i18n="features">Features</h3>
+                    <ul id="modalFeatures"></ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- sUNC Modal -->
+    <div id="suncModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" id="closeSuncModal">&times;</span>
+            <h2 id="suncModalTitle">sUNC Test</h2>
+            <div class="modal-body">
+                <div class="sunc-header">
+                    <div class="sunc-score">
+                        <span class="stat-label">sUNC Score</span>
+                        <span class="stat-value sunc-value" id="suncModalValue">0%</span>
+                    </div>
+                </div>
+
+                <div class="sunc-section">
+                    <div class="sunc-actions">
+                        <a href="https://docs.sunc.su/" target="_blank" class="sunc-link">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            <span data-i18n="whatIsSunc">What is sUNC?</span>
+                        </a>
+                        <button onclick="copySuncScript()" class="btn btn-sm btn-outline">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span data-i18n="copySunc">Copy sUNC Script</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- sUNC Widget Container -->
+                <div id="suncWidgetContainer" class="sunc-widget-container hidden">
+                    <iframe id="sunc-widget" src="https://sunc.rubis.app/widget/" allowfullscreen></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Disclaimer Modal -->
+    <div id="disclaimerModal" class="modal">
+        <div class="modal-content disclaimer-modal">
+            <span class="close-modal" id="closeDisclaimer">&times;</span>
+            <div class="disclaimer-icon">⚠️</div>
+            <h2 data-i18n="disclaimerTitle">Disclaimer</h2>
+            <div class="modal-body">
+                <p class="disclaimer-text" data-i18n="disclaimerText">The site is not responsible for the use of
+                    executors, any possible risks, or consequences. Use them at your own risk.</p>
+                <div class="disclaimer-actions">
+                    <button class="btn btn-secondary" id="cancelDownload" data-i18n="cancel">Cancel</button>
+                    <a href="#" id="confirmDownload" class="btn btn-primary" target="_blank" data-i18n="continue">I
+                        Understand, Continue</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container footer-content">
+            <p data-i18n="footerText">Executors Archive by CreatorNovaAxis (⚠️ Disclaimer: The author is not responsible
+                for the use of Executors, any possible risks or consequences.)</p>
+            <a href="https://t.me/ArchiveScrpts140" target="_blank">Telegram</a>
+        </div>
+    </footer>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
